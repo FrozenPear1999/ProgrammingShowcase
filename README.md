@@ -14,7 +14,7 @@ Welcome to **Zeyu's Programming Showcase** ! This repository contains several re
 ## Thesis Code Examples
 
 **Description:**  
-This project, located in the `thesis_code_example` folder, contains part of the code examples of [my thesis](https://umu.diva-portal.org/smash/record.jsf?pid=diva2%3A1865447&dswid=-7877).  The examples show measurements for some of the models in the experiment, with the same approach applied to the rest of the models.  
+This project, located in the `thesis_code_example` folder, contains part of the code examples of [my thesis](https://umu.diva-portal.org/smash/record.jsf?pid=diva2%3A1865447&dswid=-7877).  The examples show measurements for some of the models in the experiment, with the same approach applied to the rest of the models, whose similar approach are not repeated here.  
 The models covered in this section correspond to the test files as follows:
 - CBN and PatchGuard-bn: `mask_bn.py`
 - DE-RS and PatchGuard-ds: `mask_ds.py`
