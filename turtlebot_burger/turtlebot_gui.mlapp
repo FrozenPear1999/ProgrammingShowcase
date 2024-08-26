@@ -1,0 +1,256 @@
+classdef lab3app < matlab.apps.AppBase
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure
+        ModeSpinner
+        ModeSpinnerLabel
+        TEditField
+        TEditFieldLabel
+        PauseButton
+        YEditField
+        YEditFieldLabel
+        XEditField
+        XEditFieldLabel
+        WaypointDistanceSpinner matlab.ui.control.Spinner
+        WaypointDistanceSpinnerLabel matlab.ui.control.Label
+        DistanceToWallSpinner matlab.ui.control.Spinner
+        DistanceToWallSpinnerLabel matlab.ui.control.Label
+        TurningSpeedSpinner matlab.ui.control.Spinner
+        TurningSpeedSpinnerLabel matlab.ui.control.Label
+        MovingSpeedSpinner matlab.ui.control.Spinner
+        MovingSpeedSpinnerLabel matlab.ui.control.Label
+    end
+    
+    % Callbacks that handle component events
+    methods (Access = private)
+        % Code that executes after component creation
+        function startupFcn(app)
+            assignin('base','movingSpeed',1);
+            assignin('base','turningSpeed',8);
+            assignin('base','waypointDistance',5);
+            assignin('base','wallDistance',7);
+            assignin('base','heyX',0);
+            assignin('base','heyY',0);
+            assignin('base','heyT',0);
+            assignin('base','mods',0);
+            assignin('base','dur',0);
+        end
+        
+        % Value changing function: MovingSpeedSpinner
+        function MovingSpeedSpinnerValueChanging(app, event)
+            global movingValue
+            movingValue = event.Value;
+            assignin('base','movingSpeed',movingValue);
+        end
+        
+        % Value changing function: TurningSpeedSpinner
+        function TurningSpeedSpinnerValueChanging(app, event)
+            global turningValue
+            turningValue = event.Value;
+            assignin('base','turningSpeed',turningValue);
+        end
+        
+        % Value changing function: WaypointDistanceSpinner
+        function WaypointDistanceSpinnerValueChanging(app, event)
+            global waypointValue
+            waypointValue = event.Value;
+            assignin('base','waypointDistance',waypointValue);
+        end
+        
+        % Value changing function: DistanceToWallSpinner
+        function DistanceToWallSpinnerValueChanging(app, event)
+            global wallValue
+            wallValue = event.Value;
+            assignin('base','wallDistance',wallValue);
+        end
+        
+        % Value changed function: XEditField
+        function xChanged(app, event)
+            global xTar
+            xTar = app.XEditField.Value;
+            assignin('base','heyX',xTar);
+        end
+        
+        % Value changed function: YEditField
+        function yChanged(app, event)
+            global yTar
+            yTar = app.YEditField.Value;
+            assignin('base','heyY',yTar);
+        end
+        
+        % Callback function: PauseButtonPushed
+        function PauseButtonPushed(app, event)
+            global pau
+            pau = app.Button_2.Value;
+            assignin('base','dur',pau);
+        end
+        
+        % Value changed function: PauseButton
+        function PauseButtonValueChanged(app, event)
+            global value
+            value = app.PauseButton.Value;
+            assignin('base','dur',value);
+        end
+        
+        % Callback function: ModeButtonGroupSelectionChanged
+        function ModeButtonGroupSelectionChanged(app, event)
+        end
+        
+        % Value changing function: ModeSpinner
+        function ModeSpinnerValueChanging(app, event)
+            global mode
+            mode = event.Value;
+            assignin('base','mods',mode);
+        end
+        
+        % Value changed function: TEditField
+        function TEditFieldValueChanged(app, event)
+            global tTar
+            tTar = app.TEditField.Value;
+            assignin('base','heyT',tTar);
+        end
+    end
+    
+    % Component initialization
+    methods (Access = private)
+        % Create UIFigure and components
+        function createComponents(app)
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 640 480];
+            app.UIFigure.Name = 'MATLAB App';
+            
+            % Create MovingSpeedSpinnerLabel
+            app.MovingSpeedSpinnerLabel = uilabel(app.UIFigure);
+            app.MovingSpeedSpinnerLabel.HorizontalAlignment = 'right';
+            app.MovingSpeedSpinnerLabel.Position = [102 323 82 22];
+            app.MovingSpeedSpinnerLabel.Text = 'Moving Speed';
+            
+            % Create MovingSpeedSpinner
+            app.MovingSpeedSpinner = uispinner(app.UIFigure);
+            app.MovingSpeedSpinner.ValueChangingFcn = createCallbackFcn(app, @MovingSpeedSpinnerValueChanging, true);
+            app.MovingSpeedSpinner.Limits = [0 Inf];
+            app.MovingSpeedSpinner.Position = [199 323 100 22];
+            app.MovingSpeedSpinner.Value = 1;
+            
+            % Create TurningSpeedSpinnerLabel
+            app.TurningSpeedSpinnerLabel = uilabel(app.UIFigure);
+            app.TurningSpeedSpinnerLabel.HorizontalAlignment = 'right';
+            app.TurningSpeedSpinnerLabel.Position = [368 323 83 22];
+            app.TurningSpeedSpinnerLabel.Text = 'Turning Speed';
+            
+            % Create TurningSpeedSpinner
+            app.TurningSpeedSpinner = uispinner(app.UIFigure);
+            app.TurningSpeedSpinner.ValueChangingFcn = createCallbackFcn(app, @TurningSpeedSpinnerValueChanging, true);
+            app.TurningSpeedSpinner.Limits = [0 Inf];
+            app.TurningSpeedSpinner.Position = [466 323 100 22];
+            app.TurningSpeedSpinner.Value = 8;
+            
+            % Create DistanceToWallSpinnerLabel
+            app.DistanceToWallSpinnerLabel = uilabel(app.UIFigure);
+            app.DistanceToWallSpinnerLabel.HorizontalAlignment = 'right';
+            app.DistanceToWallSpinnerLabel.Position = [90 242 94 22];
+            app.DistanceToWallSpinnerLabel.Text = 'Distance To Wall';
+            
+            % Create DistanceToWallSpinner
+            app.DistanceToWallSpinner = uispinner(app.UIFigure);
+            app.DistanceToWallSpinner.ValueChangingFcn = createCallbackFcn(app, @DistanceToWallSpinnerValueChanging, true);
+            app.DistanceToWallSpinner.Limits = [0 Inf];
+            app.DistanceToWallSpinner.Position = [199 242 100 22];
+            app.DistanceToWallSpinner.Value = 7;
+            
+            % Create WaypointDistanceSpinnerLabel
+            app.WaypointDistanceSpinnerLabel = uilabel(app.UIFigure);
+            app.WaypointDistanceSpinnerLabel.HorizontalAlignment = 'right';
+            app.WaypointDistanceSpinnerLabel.Position = [347 242 104 22];
+            app.WaypointDistanceSpinnerLabel.Text = 'Waypoint Distance';
+            
+            % Create WaypointDistanceSpinner
+            app.WaypointDistanceSpinner = uispinner(app.UIFigure);
+            app.WaypointDistanceSpinner.ValueChangingFcn = createCallbackFcn(app, @WaypointDistanceSpinnerValueChanging, true);
+            app.WaypointDistanceSpinner.Limits = [0 Inf];
+            app.WaypointDistanceSpinner.Position = [466 242 100 22];
+            app.WaypointDistanceSpinner.Value = 5;
+            
+            % Create XEditFieldLabel
+            app.XEditFieldLabel = uilabel(app.UIFigure);
+            app.XEditFieldLabel.HorizontalAlignment = 'right';
+            app.XEditFieldLabel.Position = [102 114 25 22];
+            app.XEditFieldLabel.Text = 'X';
+            
+            % Create XEditField
+            app.XEditField = uieditfield(app.UIFigure, 'numeric');
+            app.XEditField.ValueChangedFcn = createCallbackFcn(app, @xChanged, true);
+            app.XEditField.Position = [142 114 100 22];
+            
+            % Create YEditFieldLabel
+            app.YEditFieldLabel = uilabel(app.UIFigure);
+            app.YEditFieldLabel.HorizontalAlignment = 'right';
+            app.YEditFieldLabel.Position = [278 114 25 22];
+            app.YEditFieldLabel.Text = 'Y';
+            
+            % Create YEditField
+            app.YEditField = uieditfield(app.UIFigure, 'numeric');
+            app.YEditField.ValueChangedFcn = createCallbackFcn(app, @yChanged, true);
+            app.YEditField.Position = [318 114 100 22];
+            
+            % Create PauseButton
+            app.PauseButton = uibutton(app.UIFigure, 'state');
+            app.PauseButton.ValueChangedFcn = createCallbackFcn(app, @PauseButtonValueChanged, true);
+            app.PauseButton.Text = 'Pause';
+            app.PauseButton.Position = [298 57 100 23];
+            
+            % Create TEditFieldLabel
+            app.TEditFieldLabel = uilabel(app.UIFigure);
+            app.TEditFieldLabel.HorizontalAlignment = 'right';
+            app.TEditFieldLabel.Position = [450 114 25 22];
+            app.TEditFieldLabel.Text = 'T';
+            
+            % Create TEditField
+            app.TEditField = uieditfield(app.UIFigure, 'numeric');
+            app.TEditField.ValueChangedFcn = createCallbackFcn(app, @TEditFieldValueChanged, true);
+            app.TEditField.Position = [490 114 100 22];
+            
+            % Create ModeSpinnerLabel
+            app.ModeSpinnerLabel = uilabel(app.UIFigure);
+            app.ModeSpinnerLabel.HorizontalAlignment = 'right';
+            app.ModeSpinnerLabel.Position = [232 177 104 22];
+            app.ModeSpinnerLabel.Text = 'Mode';
+            
+            % Create ModeSpinner
+            app.ModeSpinner = uispinner(app.UIFigure);
+            app.ModeSpinner.ValueChangingFcn = createCallbackFcn(app, @ModeSpinnerValueChanging, true);
+            app.ModeSpinner.Limits = [0 2];
+            app.ModeSpinner.Position = [351 177 100 22];
+            
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+    
+    % App creation and deletion
+    methods (Access = public)
+        % Construct app
+        function app = lab3app
+            % Create UIFigure and components
+            createComponents(app)
+            
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+            
+            % Execute the startup function
+            runStartupFcn(app, @startupFcn)
+            
+            if nargout == 0
+                clear app
+            end
+        end
+        
+        % Code that executes before app deletion
+        function delete(app)
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
+
